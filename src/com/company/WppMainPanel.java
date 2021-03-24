@@ -100,7 +100,7 @@ public class WppMainPanel extends JPanel {
                // float s = app.get_ActivePresentation().get_Slides().Item(2).get_Master().get_TextStyles().Item(PpTextStyleType.ppBodyStyle).get_Levels().Item(1).get_Font().get_Size();
 
                 // 获取指定幻灯片的标题内容（Item中为第几张幻灯片）
-                String s = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Text();
+                String sTitle = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Text();
 
                 // 获取指定幻灯片的标题内容的字体样式（Item中为第几张幻灯片）
                 String fontStyle = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Font().get_Name();
@@ -110,7 +110,7 @@ public class WppMainPanel extends JPanel {
                 String presetStyle = app.get_ActivePresentation().get_Slides().Item(1).get_Background().get_Fill().get_PresetTexture().name();
 
                 System.out.println(presetStyle);
-                menuPanel.updteText("test","");
+                menuPanel.updteText("test","第一张幻灯片的标题为："+sTitle+"\n"+"第一张幻灯片的标题的字体样式:"+fontStyle+"\n"+"第一张幻灯片的背景填充为:"+presetStyle);
             }
         });
 
