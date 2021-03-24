@@ -25,6 +25,7 @@ import static com.wps.api.tree.wpp.MsoPresetTexture.msoTextureWovenMat;
  * Author               :   Kingsoft
  * Create Date          :   2019-12-09
  * Version              :   1.0
+ * Item序列都是从0开始
  */
 public class WppMainPanel extends JPanel {
 
@@ -63,6 +64,7 @@ public class WppMainPanel extends JPanel {
                         getHWnd.setAccessible(true);
 
                         nativeWinId = (long)getHWnd.invoke(peer);
+                        System.out.println("wppid:"+nativeWinId);
                     } else {
                         WindowIDProvider pid = (WindowIDProvider) client.getPeer();
                         nativeWinId = pid.getWindow();
@@ -83,6 +85,7 @@ public class WppMainPanel extends JPanel {
         });
 
 
+        menuPanel.addArea("常用","text","题目");
         menuPanel.addButton("常用", "新建", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -104,13 +107,26 @@ public class WppMainPanel extends JPanel {
 
                 // 获取指定幻灯片的标题内容的字体样式（Item中为第几张幻灯片）
                 String fontStyle = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Font().get_Name();
+                float fontSize = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Font().get_Size();
+                String fontBold = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().get_Title().get_TextFrame().get_TextRange().get_Font().get_Bold().name();
+
 
                 // 获取指定幻灯片的背景填充样式（Item中为第几张幻灯片）可以获取name也可以获取comEnumValue背景所代表的值
                 // app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().Item(1).get_Fill().PresetTextured(msoTextureWovenMat);
                 String presetStyle = app.get_ActivePresentation().get_Slides().Item(1).get_Background().get_Fill().get_PresetTexture().name();
 
-                System.out.println(presetStyle);
-                menuPanel.updteText("test","第一张幻灯片的标题为："+sTitle+"\n"+"第一张幻灯片的标题的字体样式:"+fontStyle+"\n"+"第一张幻灯片的背景填充为:"+presetStyle);
+
+                // 获取指定幻灯片的文本内容（第一个Item中为第几张幻灯片，第二个Item为第几个文本框）
+                String contentText = app.get_ActivePresentation().get_Slides().Item(1).get_Shapes().Item(2).get_TextFrame().get_TextRange().get_Text();
+
+                System.out.println();
+                menuPanel.updteText("test","第一张幻灯片的标题为："+sTitle+
+                        "\n"+ "第一张幻灯片的标题的字体样式:"+"\n"+ fontStyle+
+                        "\n"+"第一张幻灯片的标题的字体大小:"+"\n"+ fontSize+
+                        "\n"+"第一张幻灯片的标题的字体加粗为:"+"\n"+ fontBold+
+                        "\n"+"第一张幻灯片的背景填充为:"+"\n"+ presetStyle+
+                        "\n"+"第一张幻灯片的第二个文本框内容为："+"\n"+ contentText
+                );
             }
         });
 

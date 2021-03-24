@@ -48,7 +48,7 @@ public class EtMainPanel extends JPanel {
         this.add(officePanel, BorderLayout.CENTER);
         initMenu();
         initRibbon();
-        initFrameListener();
+      //  initFrameListener();
     }
 
     private void initMenu(){
@@ -71,6 +71,8 @@ public class EtMainPanel extends JPanel {
                         getHWnd.setAccessible(true);
 
                         nativeWinId = (long)getHWnd.invoke(peer);
+
+                        System.out.println("exid:"+nativeWinId);
                     } else {
                         WindowIDProvider pid = (WindowIDProvider) client.getPeer();
                         nativeWinId = pid.getWindow();
@@ -98,6 +100,7 @@ public class EtMainPanel extends JPanel {
         });
 
 
+        menuPanel.addArea("常用","text","题目");
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -128,6 +131,7 @@ public class EtMainPanel extends JPanel {
         });
 
         menuPanel.addArea("常用","text","提交后输出区域");
+
 
 
         menuPanel.addButton("常用", "关闭", new ActionListener() {
@@ -182,7 +186,7 @@ public class EtMainPanel extends JPanel {
         });
     }
 
-    private void initFrameListener() {
+    /*private void initFrameListener() {
         if (!Platform.isWindows())
             return;
 
@@ -203,5 +207,5 @@ public class EtMainPanel extends JPanel {
                 });
             }
         });
-    }
+    }*/
 }

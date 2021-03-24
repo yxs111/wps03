@@ -71,6 +71,7 @@ public class WpsMainPanel extends JPanel {
    private CharUitl charUitl;
    private ExamPanel examPanel;
 
+
     public WpsMainPanel() {
         this.setLayout(new BorderLayout());
         menuPanel = new LeftMenuPanel();
@@ -78,6 +79,8 @@ public class WpsMainPanel extends JPanel {
         this.add(menuPanel, BorderLayout.WEST);
         this.add(officePanel, BorderLayout.CENTER);
         initNormalMenu();           //常用接口
+
+
 
 
     }
@@ -90,7 +93,13 @@ public class WpsMainPanel extends JPanel {
         return dialog.getDirectory() + dialog.getFile();
     }
 
+
+    private void initWindow(){
+        new WpsWindow();
+    }
+
     private void initNormalMenu(){
+        //new WpsWindow();
 
 
 
@@ -100,7 +109,7 @@ public class WpsMainPanel extends JPanel {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
                     if(null != app.get_ActiveWindow()){
-                        JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
+                        JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
                         return;
                     }
                 }
@@ -114,6 +123,8 @@ public class WpsMainPanel extends JPanel {
                     	getHWnd.setAccessible(true);
 
                         nativeWinId = (long)getHWnd.invoke(peer);
+
+                        System.out.println("wpsid:"+nativeWinId);
                     } else {
                         WindowIDProvider pid = (WindowIDProvider) client.getPeer();
 
@@ -232,10 +243,7 @@ public class WpsMainPanel extends JPanel {
             }
         });
 
-        menuPanel.addArea("常用","234","(1)为素材加上页眉“WPS办公应用职业技能等级标准”，居中显示，字体大小为宋体小四。\n" +
-                "(2)为素材加上页码，从正文开始，格式为“1”，在页脚居中显示。\n" +
-                "(3)对素材进行排版，确定标题级别，并自动生成目录。其中标题1为黑体、二号；标题2为黑体三号；标题为3宋体，三号，加粗；正文使用小四号宋体，西文及数字使用小四号Times New Roman字体，1.5倍行距；目录为宋体、小四号字体。\n" +
-                "(4)为文档加上封面，内容为“WPS办公应用职业技能等级标准”，效果可自己设计。");
+        menuPanel.addArea("常用","234","结果");
 
         /*menuPanel.addButton("理论", "理论试题", new ActionListener() {
             @Override
@@ -328,7 +336,6 @@ public class WpsMainPanel extends JPanel {
 
 
     }
-
 
 
 

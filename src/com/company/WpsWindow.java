@@ -15,37 +15,27 @@ import java.awt.peer.ComponentPeer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class WpsWindow extends JPanel {
+public class WpsWindow extends  JPanel{
 
     static private LeftMenuPanel menuPanel;
     static private OfficePanel officePanel;
     static private Application app = null;
 
 
+    public   WpsWindow(){
+        // write your code here
 
 
-    public WpsWindow(){
-      /*  SwingUtilities.invokeLater(new Runnable() {
-            public void run() {*/
-
-                System.out.println("inner");
                 JFrame mainFrame = new JFrame();
+
                 mainFrame.setLayout(new BorderLayout());
-                menuPanel = new LeftMenuPanel();
+               // menuPanel = new LeftMenuPanel();
                 officePanel = new OfficePanel();
-                mainFrame.add(menuPanel, BorderLayout.WEST);
-                mainFrame.add(officePanel, BorderLayout.CENTER);
-                mainFrame.setTitle("WPS JAVA接口调用演示");                       //设置显示窗口标题
-                mainFrame.setSize(1524, 768);                           //设置窗口显示尺寸
+               // mainFrame.add(menuPanel, BorderLayout.WEST);
+                mainFrame.add(officePanel, BorderLayout.CENTER);                 //设置显示窗口标题
+                mainFrame.setSize(500, 400);                           //设置窗口显示尺寸
                 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       //置窗口是否可以关闭
-                mainFrame.setResizable(false);//禁止缩放
-                JPanel panel = new JPanel();
-                // 添加面板
-                mainFrame.add(panel);
-                /*
-                 * 调用用户定义的方法并添加组件到面板
-                 */
-                JTabbedPane tabbedPane = new JTabbedPane();
+                mainFrame.setResizable(true);//禁止缩放
 
                 mainFrame.addWindowListener(new WindowListener() {
                     @Override
@@ -59,6 +49,7 @@ public class WpsWindow extends JPanel {
                             }
                         }
                         long nativeWinId = 0;
+
                         try {
                             if (Platform.isWindows()) {
                                 ComponentPeer peer = client.getPeer();
@@ -66,7 +57,9 @@ public class WpsWindow extends JPanel {
                                 Method getHWnd = clsCanvasPeer.getDeclaredMethod("getHWnd");
                                 getHWnd.setAccessible(true);
 
-                                //nativeWinId = (long)getHWnd.invoke(peer);
+                                nativeWinId = (long)getHWnd.invoke(peer);
+
+                                System.out.println(nativeWinId);
                             } else {
                                 WindowIDProvider pid = (WindowIDProvider) client.getPeer();
 
@@ -97,7 +90,6 @@ public class WpsWindow extends JPanel {
                         args.setWinid(nativeWinId);
                         args.setHeight(client.getHeight());
                         args.setWidth(client.getWidth());
-                        // args.setCrypted(false); //wps2016需要关闭加密
                         app = ClassFactory.createApplication();
                         app.put_Visible(true);
 
@@ -113,6 +105,7 @@ public class WpsWindow extends JPanel {
 
                     @Override
                     public void windowClosed(WindowEvent e) {
+
 
                     }
 
@@ -132,30 +125,25 @@ public class WpsWindow extends JPanel {
 
                     }
 
-
                     @Override
                     public void windowDeactivated(WindowEvent e) {
 
                     }
                 });
+                // tabbedPane.add(new ExamPanel("http://1xexam.jiuhuax.com/login/index2"), "演示");
+                //tabbedPane.add(new WpsWindow(),"WPSwindow");
 
 
-
-                mainFrame.add(tabbedPane);
+                //mainFrame.add(tabbedPane);
                 mainFrame.setVisible(true);                                     //设置窗口是否可见
-                mainFrame.setContentPane(panel);
-//            }
-//        });
-    }
+                //mainFrame.setContentPane(panel);
 
 
 
+            }
 
 
-
-
-    /*public static void WpsWindow(){
-        app.get_Documents().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing());
-    }*/
 
 }
+
+
