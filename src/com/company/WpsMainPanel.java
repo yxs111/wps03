@@ -101,6 +101,7 @@ public class WpsMainPanel extends JPanel {
     private void initNormalMenu(){
         //new WpsWindow();
 
+        WpsUtil wpsUtil = new WpsUtil();
 
 
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
@@ -109,8 +110,9 @@ public class WpsMainPanel extends JPanel {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
                     if(null != app.get_ActiveWindow()){
+                        //app.get_ActiveDocument().Close(false, Variant.getMissing(), Variant.getMissing());
                         // JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
-                        app.get_ActiveDocument().get_Content().put_Text(new WpsUtil().wpsContentText);
+                        app.get_ActiveDocument().get_Content().put_Text(wpsUtil.wpsContentText);
                         return;
                     }
                 }
@@ -162,7 +164,7 @@ public class WpsMainPanel extends JPanel {
                 // // 初始化完成之后新建文档
                 app.get_Documents().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing());
 
-                app.get_ActiveDocument().get_Content().put_Text(new WpsUtil().wpsContentText);
+                app.get_ActiveDocument().get_Content().put_Text(wpsUtil.wpsContentText);
 
             }
         });
@@ -187,10 +189,7 @@ public class WpsMainPanel extends JPanel {
         });
         */
 
-        menuPanel.addArea("常用","123","(1)为素材加上页眉“WPS办公应用职业技能等级标准”，居中显示，字体大小为宋体小四。\n" +
-                "(2)为素材加上页码，从正文开始，格式为“1”，在页脚居中显示。\n" +
-                "(3)对素材进行排版，确定标题级别，并自动生成目录。其中标题1为黑体、二号；标题2为黑体三号；标题为3宋体，三号，加粗；正文使用小四号宋体，西文及数字使用小四号Times New Roman字体，1.5倍行距；目录为宋体、小四号字体。\n" +
-                "(4)为文档加上封面，内容为“WPS办公应用职业技能等级标准”，效果可自己设计。");
+        menuPanel.addArea("常用","123",wpsUtil.wpsRequirement);
 
 
         menuPanel.addButton("常用","提交" , new ActionListener(){

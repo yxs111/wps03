@@ -46,11 +46,14 @@ public class WppMainPanel extends JPanel {
     }
 
     private void initMenu(){
+
+        WpsUtil wpsUtil = new WpsUtil();
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
+                    app.get_ActivePresentation().Close();
                     // JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
                     app.get_Presentations().Add(MsoTriState.msoTrue);
                     return;
@@ -89,7 +92,7 @@ public class WppMainPanel extends JPanel {
         });
 
 
-        menuPanel.addArea("常用","text","题目");
+        menuPanel.addArea("常用","text",wpsUtil.wppRequirement);
 
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override

@@ -2,11 +2,8 @@ package com.company;
 
 import com.wps.api.tree.et.Application;
 import com.wps.api.tree.et.ClassFactory;
-import com.wps.api.tree.ex.IWindowEx;
 import com.wps.runtime.utils.Platform;
 import com.wps.runtime.utils.WpsArgs;
-import com4j.COM4J;
-import com4j.Com4jObject;
 import com4j.Variant;
 import sun.awt.WindowIDProvider;
 
@@ -14,15 +11,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.peer.ComponentPeer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Project              :   Java API Examples
@@ -52,13 +43,23 @@ public class EtMainPanel extends JPanel {
     }
 
     private void initMenu(){
+
+        WpsUtil wpsUtil = new WpsUtil();
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
+                    app.get_ActiveWorkbook().Close(false, Variant.getMissing(), Variant.getMissing(), DEFAULT_LCID);
                     // JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
                     app.get_Workbooks().Add(Variant.getMissing(), DEFAULT_LCID);
+                    app.get_ActiveWorkbook().get_ActiveSheet().put_Name("题4");
+
+                    // 创建新的工作表
+                    wpsUtil.ifText(app);
+
+
+
                     return;
                 }
 
@@ -86,20 +87,22 @@ public class EtMainPanel extends JPanel {
                 args.setWinid(nativeWinId);
                 args.setHeight(client.getHeight());
                 args.setWidth(client.getWidth());
-//                args.setCrypted(false); //wps2016需要关闭加密
+//              args.setCrypted(false); //wps2016需要关闭加密
                 app =  ClassFactory.createApplication();
                 app.put_Visible(DEFAULT_LCID, true);
 
                 // 初始化工作蒲完成之后新建工作表
                 app.get_Workbooks().Add(Variant.getMissing(), DEFAULT_LCID);
+                app.get_ActiveWorkbook().get_ActiveSheet().put_Name("题4");
+                String s4 = app.get_ActiveWorkbook().get_ActiveSheet().get_Name();
 
-
-
+                System.out.println(s4);
                 // 创建新的工作表
-                for (int i = 0 ; i<3 ;i++) {
-                    app.get_ActiveWorkbook().get_Worksheets().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), i);
-                }
-                System.out.println();
+                wpsUtil.ifText(app);
+
+
+
+
 
             }
         });
@@ -108,14 +111,15 @@ public class EtMainPanel extends JPanel {
 
 
 
-        menuPanel.addArea("常用","text","题目");
+        menuPanel.addArea("常用","text",wpsUtil.etRequirement);
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 // 工作表个数
                 int i = app.get_Worksheets().get_Count();
-                System.out.println();
+                String sheetName = app.get_ActiveWorkbook().get_ActiveSheet().get_Name();
+                System.out.println(sheetName);
 
                 // 获得单元格内字体样式名称
                 String s = app.get_ActiveCell().get_Font().get_Name().toString();
