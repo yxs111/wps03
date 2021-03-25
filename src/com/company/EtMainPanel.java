@@ -47,17 +47,18 @@ public class EtMainPanel extends JPanel {
         this.add(menuPanel, BorderLayout.WEST);
         this.add(officePanel, BorderLayout.CENTER);
         initMenu();
-        initRibbon();
+       // initRibbon();
       //  initFrameListener();
     }
 
     private void initMenu(){
-        menuPanel.addButton("常用", "初始化", new ActionListener() {
+        menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
-                    JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
+                    // JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
+                    app.get_Workbooks().Add(Variant.getMissing(), DEFAULT_LCID);
                     return;
                 }
 
@@ -88,22 +89,33 @@ public class EtMainPanel extends JPanel {
 //                args.setCrypted(false); //wps2016需要关闭加密
                 app =  ClassFactory.createApplication();
                 app.put_Visible(DEFAULT_LCID, true);
-            }
-        });
 
-
-        menuPanel.addButton("常用", "创建新表格", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                // 初始化工作蒲完成之后新建工作表
                 app.get_Workbooks().Add(Variant.getMissing(), DEFAULT_LCID);
+
+
+
+                // 创建新的工作表
+                for (int i = 0 ; i<3 ;i++) {
+                    app.get_ActiveWorkbook().get_Worksheets().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), i);
+                }
+                System.out.println();
+
             }
         });
+
+
+
 
 
         menuPanel.addArea("常用","text","题目");
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                // 工作表个数
+                int i = app.get_Worksheets().get_Count();
+                System.out.println();
 
                 // 获得单元格内字体样式名称
                 String s = app.get_ActiveCell().get_Font().get_Name().toString();
@@ -175,7 +187,7 @@ public class EtMainPanel extends JPanel {
             }
         });*/
 
-        menuPanel.addButton("功能区", "隐藏/显示-剪切按钮", new ActionListener() {
+        /*menuPanel.addButton("功能区", "隐藏/显示-剪切按钮", new ActionListener() {
             private boolean visible = false;
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -183,7 +195,7 @@ public class EtMainPanel extends JPanel {
                 app.get_CommandBars().SetVisibleMso("Cut", visible);
                 visible = !visible;
             }
-        });
+        });*/
     }
 
     /*private void initFrameListener() {

@@ -103,13 +103,14 @@ public class WpsMainPanel extends JPanel {
 
 
 
-        menuPanel.addButton("常用", "初始化", new ActionListener() {
+        menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
                     if(null != app.get_ActiveWindow()){
-                        JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
+                        // JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
+                        app.get_ActiveDocument().get_Content().put_Text(new WpsUtil().wpsContentText);
                         return;
                     }
                 }
@@ -158,16 +159,21 @@ public class WpsMainPanel extends JPanel {
 //                args.setCrypted(false); //wps2016需要关闭加密
                 app = ClassFactory.createApplication();
                 app.put_Visible(true);
+                // // 初始化完成之后新建文档
+                app.get_Documents().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing());
+
+                app.get_ActiveDocument().get_Content().put_Text(new WpsUtil().wpsContentText);
+
             }
         });
 
 
-        menuPanel.addButton("常用", "创建新文档", new ActionListener() {
+        /*menuPanel.addButton("常用", "创建新文档", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 app.get_Documents().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing());
             }
-        });
+        });*/
 
 
 
@@ -205,16 +211,19 @@ public class WpsMainPanel extends JPanel {
                 String s = app.get_ActiveDocument().get_Paragraphs().get_Alignment().name();
 
 
-                Section item = app.get_ActiveDocument().get_Sections().Item(1);
-                /*// 判断页眉是否存在
+                Section item = app.get_ActiveDocument().get_Sections().Item(1);int se = app.get_ActiveDocument().get_Sections().get_Count();
+                // 判断页眉是否存在
                 boolean exists = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Exists();
 
+                System.out.println(exists);
                 // 获取页眉内容
                 String text1 = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
 
+                System.out.println(text1);
 
                 String nameFarEast2 =item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_NameFarEast();
-                Float size = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();*/
+                Float size = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();
+                System.out.println(size);
                 String name = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_ParagraphFormat().get_Alignment().name();
                 if(name.equals("wdAlignParagraphCenter")){
                     name = "居中";

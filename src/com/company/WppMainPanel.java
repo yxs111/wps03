@@ -46,12 +46,13 @@ public class WppMainPanel extends JPanel {
     }
 
     private void initMenu(){
-        menuPanel.addButton("常用", "初始化", new ActionListener() {
+        menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
-                    JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
+                    // JOptionPane.showMessageDialog(client, "已经初始化过，不需要重新初始化！");
+                    app.get_Presentations().Add(MsoTriState.msoTrue);
                     return;
                 }
 
@@ -81,17 +82,15 @@ public class WppMainPanel extends JPanel {
     //            args.setCrypted(false); //wps2016需要关闭加密
                 app = ClassFactory.createApplication();
                 app.put_Visible(MsoTriState.msoTrue);
+
+                 // 初始化完成之后新建ppt
+                app.get_Presentations().Add(MsoTriState.msoTrue);
             }
         });
 
 
         menuPanel.addArea("常用","text","题目");
-        menuPanel.addButton("常用", "新建", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                app.get_Presentations().Add(MsoTriState.msoTrue);
-            }
-        });
+
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
