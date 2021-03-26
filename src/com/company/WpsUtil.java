@@ -1,40 +1,21 @@
 package com.company;
 
-import com.wps.api.tree.et.Application;
-import com4j.Variant;
+import com.wps.api.tree.wps.Application;
+import com.wps.api.tree.wps.WdHeaderFooterIndex;
+import com.wps.api.tree.wps.WdPageNumberStyle;
+
+import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterPrimary;
+
 
 public class WpsUtil {
-
 
     //文档题目要求
     public String wpsRequirement = "对以下素材按要求进行排版：\n" +
             "(1)为素材加上页眉“WPS办公应用职业技能等级标准”，居中显示，字体大小为宋体小四。\n" +
             "(2)为素材加上页码，从正文开始，格式为“1”，在页脚居中显示。\n" +
             "(3)对素材进行排版，确定标题级别，并自动生成目录。其中标题1为黑体、二号；标题2为黑体三号；标题为3宋体，三号，加粗；正文使用小四号宋体，西文及数字使用小四号Times New Roman字体，1.5倍行距；目录为宋体、小四号字体。\n" +
-            "(4)为文档加上封面，内容为“WPS办公应用职业技能等级标准”，效果可自己设计。\n";
-
-
-    // ppt题目要求
-    public String wppRequirement = "打开WPS演示文稿，按要求完成以下操作：\n" +
-            "(1)插入第一张版式为只有标题的幻灯片，第二张版式为标题和文本的幻灯片，第三张版式为垂直排列标题和文本的幻灯片，第四张版式为标题和文本的幻灯片，输入文本。所有幻灯片的背景为“填充效果”中的“纹理”中的“褐色大理石”如图。\n" +
-            "(2)在第一张幻灯片上插入自选图形（星与旗帜下的横卷形），输入文字如图。\n" +
-            "(3)将幻灯片的配色方案设为标题为白色，文本和线条为黄色 。\n" +
-            "(4)将母板标题格式设为宋体，44号，加粗。设置文本格式设为华文细黑，32号，加粗，行距为2行，项目符号为z（windings字符集中），桔红色。\n" +
-            "(5)在母板的左下角插入剪贴画（宗教-佛教）如图。\n" +
-            "(6)设置第一张幻灯片的各个自选图形的填充颜色为无，字体为隶书，48号。在自选图形上加入到对应幻灯片的链接。\n" +
-            "(7)设置第一张幻灯片的动画效果：第一个自选图形自左侧切入，随后第二个自选图形自动自右侧切入，第三个自选图形自动自底部切入。\n" +
-            "(8)其余3张幻灯片中的每个对象都要设置动画效果，并每张幻灯片之间要有“幻灯片切换效果”。\n" +
-            "(9)第2、3、4张幻灯片中加入返回第1张的链接，链接点自己定义，可以在图片上也可在文字上或加按钮都可。\n" +
-            "(10)设置全程背景音乐（宗次郎 - 故乡的原风景.mp3）。\n";
-
-    //表格题目要求
-    public String etRequirement = "按照要求完成“中级电子表格操作题”工作簿相关任务操作：\n" +
-            "(1)打开“中级电子表格操作题”工作簿“题1”工作表，使用WPS功能下的【有效性】功能按照下图1对应职务顺序完成职务的填列。\n" +
-            "(2)在“题1”工作表完成职务填列后，根据目标序列图2设置自定义序列，并在职务列按照自定义序列完成排序。" +
-            "(3)打开“题2”工作表。根据题2资料，在G2单元格使用SUMIF函数计算1月月份在门诊郑医生处就诊的病人人数，在G5单元格使用COUNTIF函数统计卫医生1月份在门诊上班的天数，在D列使用IF函数根据“就诊人数>30人就算超工作量”判断医生们有没有超工作量情况。\n" +
-            "(4)打开“题3”工作表。使用MID函数从身份证号中提取生日信息。\n" +
-            "(5)打开“题4”工作表。插入组合图，标题为“1月门诊就诊人数占比分析”。图表类型为“簇状柱形图”和“折线图”，折线图为次坐标轴，按照图3样式，绘制组合图\n";
-
+            "(4)为文档加上封面，内容为“WPS办公应用职业技能等级标准”，效果可自己设计。\n" +
+            "每个要求25分，总分100分";
 
     // wps文字素材内容
     public  String wpsContentText="一、 范围\n" +
@@ -80,108 +61,132 @@ public class WpsUtil {
             "（3）WPS办公应用高级\n" +
             "主要面向企事业单位专职文员或技术岗位团队协作的需要，能够实现在线团队协作办公，创意型演示文稿的创作与演讲，应用数据表格对数据的进行数据的可视化处理并打印。\n";
 
+    // 页眉和页脚相关判断
+    public double headerFootStyle(Application app){
+        double headerFoot = 0.00;
+        // 获取页眉内容
+        String headerText = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
 
-    public void ifText(Application app){
-        for (int i = 0 ; i<3 ;i++) {
-            app.get_ActiveWorkbook().get_Worksheets().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing(),-i);
-            app.get_ActiveWorkbook().get_ActiveSheet().put_Name("题"+ (3-i));
-            String sheetName = app.get_ActiveWorkbook().get_ActiveSheet().get_Name();
+        // 获取页脚样式
+        WdPageNumberStyle footNumberStyle = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_NumberStyle();
 
-            if(sheetName.equals("题1")){
-                this.ETText1(app);
-            }else if(sheetName.equals("题2")){
-                this.ETText2(app);
-            }else if(sheetName.equals("题3")){
-                this.ETText3(app);
+        // 页眉
+        if (headerText.equals("WPS办公应用职业技能等级标准")){
+            // 页眉内容 字体大小 字体样式 对齐方式为居中
+            String headerTextFontStyleName = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Name();
+            float headerTextFontSize = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();
+            String headerAlignmentName =  app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_ParagraphFormat().get_Alignment().name();
+           if(headerTextFontStyleName.equals("宋体") && headerTextFontSize == 12.0 && headerAlignmentName.equals("wdAlignParagraphCenter")){
+               headerFoot += 25;
+           }else {
+               headerFoot += 0;
+           }
+        }
+        if(headerText != "WPS办公应用职业技能等级标准"){
+            headerFoot += 0;
+        }
+
+        // 页脚
+        if(footNumberStyle.toString().equals("wdPageNumberStyleArabic")){
+            headerFoot += 25;
+        }
+        return headerFoot;
+    }
+    // 标题1字体大小为 22.0 黑体
+    // 标题2字体大小为 16.0 黑体
+    // 标题3字体大小为 16.0 宋体
+    // 正文使用12号宋体，西文及数字使用12号Times New Roman字体 1.5倍行距
+    // 标题和正文相关判断
+    public double titleContentTextStyle(Application app){
+        double titleContent = 0.00;
+
+        // 文档中有多少段落（获取值比实际段落值多一）
+        int outLineCount = app.get_ActiveDocument().get_Content().get_Paragraphs().get_Count();
+        for (int i = 0 ; i < outLineCount ;i++){
+            // 判断当前段落是否需要设置为标题
+            if (i == 1 || i == 4 || i == 6 ||
+                i == 8 || i == 10 || i == 12 ||
+                i == 14 || i == 16 || i == 18 ||
+                i == 20 || i == 22 || i == 24 ||
+                i == 25 || i == 27 || i == 29 ||
+                i == 32 || i == 34 || i == 35 ||
+                i == 37 || i == 39 || i == 41){
+                // 文本规定为标题
+                String titleStyleName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_OutlineLevel().name();
+                if (titleStyleName.equals("wdOutlineLevel1")){
+                    // 文本为标题1 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+
+                    if(fontSize == 22.0 && fontName.equals("黑体")){
+                        titleContent += 1.68;
+                    }else{
+                        titleContent += 0;
+                    }
+                }else if (titleStyleName.equals("wdOutlineLevel2")){
+                    // 文本为标题2 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                    if(fontSize == 16.0 && fontName.equals("黑体")){
+                        titleContent += 1.68;
+                    }else{
+                        titleContent += 0;
+                    }
+                }else if (titleStyleName.equals("wdOutlineLevel3")){
+                    // 文本为标题3 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                    if(fontSize == 16.0 && fontName.equals("宋体")){
+                        titleContent += 1.68;
+                    }else{
+                        titleContent += 0;
+                    }
+                }else{
+                    titleContent += 0;
+                }
+            }
+            if(i == 2 || i == 3 || i == 5 ||
+                i == 7 || i == 9 || i == 11 ||
+                i == 13 || i == 15 || i == 17 ||
+                i == 19 || i == 21 || i == 23 ||
+                i == 26 || i == 28 || i == 30 ||
+                i == 31 || i == 33 || i == 36 ||
+                i == 38 || i == 40 || i == 42){
+                // 文本不为标题
+                String countText = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Text();
+                Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                if (fontSize == 12.0 && fontName.equals("宋体")){
+                    titleContent += 1.68 ;
+                }else{
+                    titleContent += 0;
+                }
+               /* char[] ch = textContent.toCharArray();
+                for (int ci = 0; ci < ch.length; ci++) {
+                    char c = ch[ci];
+                    if(new CharUitl().isChinese(c) ? true : false){
+                        // 如果为汉字
+                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                        if (fontSize == 12.0 && fontName.equals("宋体")){
+                            max += 0 ;
+                        }else{
+                            max -= (ch.length/0.4);
+                        }
+                    }else{
+                        // 如果不为汉字
+                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                        if (fontSize == 12.0 && fontName.equals("Times New Roman")){
+                            max += 0 ;
+                        }else{
+                            max -= (ch.length/0.4);
+                        }
+                    }
+                }*/
             }
         }
-    }
-    public void ETText1(Application app){
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A1","A1").get_Cells().put_Value2("姓名");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A2","A2").get_Cells().put_Value2("赵医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A3","A3").get_Cells().put_Value2("钱医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A4","A4").get_Cells().put_Value2("孙医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A5","A5").get_Cells().put_Value2("李医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A6","A6").get_Cells().put_Value2("周医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A7","A7").get_Cells().put_Value2("吴医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A8","A8").get_Cells().put_Value2("郑医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A9","A9").get_Cells().put_Value2("王医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A10","A10").get_Cells().put_Value2("冯医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A11","A11").get_Cells().put_Value2("陈医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A12","A12").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A13","A13").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B1","B1").get_Cells().put_Value2("职务");
-    }
-    public void ETText2(Application app){
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A1","A1").get_Cells().put_Value2("姓名");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A2","A2").get_Cells().put_Value2("赵医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A3","A3").get_Cells().put_Value2("钱医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A4","A4").get_Cells().put_Value2("孙医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A5","A5").get_Cells().put_Value2("李医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A6","A6").get_Cells().put_Value2("周医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A7","A7").get_Cells().put_Value2("吴医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A8","A8").get_Cells().put_Value2("郑医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A9","A9").get_Cells().put_Value2("王医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A10","A10").get_Cells().put_Value2("冯医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A11","A11").get_Cells().put_Value2("陈医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A12","A12").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A13","A13").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B1","B1").get_Cells().put_Value2("1月平均每天就诊人数");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B2","B2").get_Cells().put_Value2("10");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B3","B3").get_Cells().put_Value2("8");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B4","B4").get_Cells().put_Value2("9");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B5","B5").get_Cells().put_Value2("8");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B6","B6").get_Cells().put_Value2("11");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B7","B7").get_Cells().put_Value2("15");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B8","B8").get_Cells().put_Value2("14");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B9","B9").get_Cells().put_Value2("5");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B10","B10").get_Cells().put_Value2("7");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B11","B11").get_Cells().put_Value2("6");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B12","B12").get_Cells().put_Value2("9");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B13","B13").get_Cells().put_Value2("8");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C1","C1").get_Cells().put_Value2("1月上班天数");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C2","C2").get_Cells().put_Value2("22");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C3","C3").get_Cells().put_Value2("25");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C4","C4").get_Cells().put_Value2("23");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C5","C5").get_Cells().put_Value2("21");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C6","C6").get_Cells().put_Value2("20");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C7","C7").get_Cells().put_Value2("11");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C8","C8").get_Cells().put_Value2("19");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C9","C9").get_Cells().put_Value2("18");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C10","C10").get_Cells().put_Value2("22");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C11","C11").get_Cells().put_Value2("25");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C12","C12").get_Cells().put_Value2("29");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C13","C13").get_Cells().put_Value2("27");
-    }
-    public void ETText3(Application app){
-
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A1","A1").get_Cells().put_Value2("姓名");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A2","A2").get_Cells().put_Value2("赵医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A3","A3").get_Cells().put_Value2("钱医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A4","A4").get_Cells().put_Value2("孙医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A5","A5").get_Cells().put_Value2("李医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A6","A6").get_Cells().put_Value2("周医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A7","A7").get_Cells().put_Value2("吴医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A8","A8").get_Cells().put_Value2("郑医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A9","A9").get_Cells().put_Value2("王医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A10","A10").get_Cells().put_Value2("冯医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A11","A11").get_Cells().put_Value2("陈医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A12","A12").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("A13","A13").get_Cells().put_Value2("诸医生");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B1","B1").get_Cells().put_Value2("身份证");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B2","B2").get_Cells().put_Value2("410901199802172012");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B3","B3").get_Cells().put_Value2("410901199502172017");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B4","B4").get_Cells().put_Value2("410901199806272018");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B5","B5").get_Cells().put_Value2("410901199402172025");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B6","B6").get_Cells().put_Value2("410901199202172047");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B7","B7").get_Cells().put_Value2("410901199702172025");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B8","B8").get_Cells().put_Value2("410901199412172147");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B9","B9").get_Cells().put_Value2("410901199712172147");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B10","B10").get_Cells().put_Value2("410901198803172755");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B11","B11").get_Cells().put_Value2("410901198803162582");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B12","B12").get_Cells().put_Value2("410901198803272724");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("B13","B13").get_Cells().put_Value2("410901198804252762");
-        app.get_ActiveWorkbook().get_ActiveSheet().get_Range("C1","C1").get_Cells().put_Value2("生日");
+        return titleContent ;
     }
 
 

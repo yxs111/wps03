@@ -44,7 +44,7 @@ public class EtMainPanel extends JPanel {
 
     private void initMenu(){
 
-        WpsUtil wpsUtil = new WpsUtil();
+        ETUtil etUtil = new ETUtil();
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -56,7 +56,7 @@ public class EtMainPanel extends JPanel {
                     app.get_ActiveWorkbook().get_ActiveSheet().put_Name("题4");
 
                     // 创建新的工作表
-                    wpsUtil.ifText(app);
+                    etUtil.ifText(app);
 
 
 
@@ -98,7 +98,7 @@ public class EtMainPanel extends JPanel {
 
                 System.out.println(s4);
                 // 创建新的工作表
-                wpsUtil.ifText(app);
+                etUtil.ifText(app);
 
 
 
@@ -111,7 +111,7 @@ public class EtMainPanel extends JPanel {
 
 
 
-        menuPanel.addArea("常用","text",wpsUtil.etRequirement);
+        menuPanel.addArea("常用","text",etUtil.etRequirement);
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

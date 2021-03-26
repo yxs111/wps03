@@ -47,7 +47,7 @@ public class WppMainPanel extends JPanel {
 
     private void initMenu(){
 
-        WpsUtil wpsUtil = new WpsUtil();
+        WppUtil wppUtil = new WppUtil();
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,7 +92,7 @@ public class WppMainPanel extends JPanel {
         });
 
 
-        menuPanel.addArea("常用","text",wpsUtil.wppRequirement);
+        menuPanel.addArea("常用","text",wppUtil.wppRequirement);
 
         menuPanel.addButton("常用", "提交", new ActionListener() {
             @Override

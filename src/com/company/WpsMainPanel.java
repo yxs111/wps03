@@ -42,10 +42,12 @@ import java.lang.reflect.Method;
 
 import java.util.HashMap;
 
+import static com.wps.api.tree.wps.WdCharacterCase.wdTitleSentence;
 import static com.wps.api.tree.wps.WdCompareDestination.wdCompareDestinationNew;
 import static com.wps.api.tree.wps.WdGranularity.wdGranularityWordLevel;
 import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterFirstPage;
 import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterPrimary;
+import static com.wps.api.tree.wps.WdInformation.*;
 
 
 /**
@@ -110,7 +112,7 @@ public class WpsMainPanel extends JPanel {
                 Canvas client = officePanel.getCanvas();
                 if (app != null) {
                     if(null != app.get_ActiveWindow()){
-                        //app.get_ActiveDocument().Close(false, Variant.getMissing(), Variant.getMissing());
+                        // app.get_ActiveDocument().Close(false, Variant.getMissing(), Variant.getMissing());
                         // JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
                         app.get_ActiveDocument().get_Content().put_Text(wpsUtil.wpsContentText);
                         return;
@@ -193,12 +195,13 @@ public class WpsMainPanel extends JPanel {
 
 
         menuPanel.addButton("常用","提交" , new ActionListener(){
+
             public void actionPerformed(ActionEvent e){
-                // 获取全部文本内容
+                /*// 获取全部文本内容
                 String text = app.get_ActiveDocument().get_Content().get_Text();
 
                 // 获取全部文本颜色
-                String color = app.get_ActiveDocument().get_Content().get_Font().get_Color().name();
+                //String color = app.get_ActiveDocument().get_Content().get_Font().get_Color().name();
 
                 // 获取全部文本字体大小
                 Float fontSize = app.get_ActiveDocument().get_Content().get_Font().get_Size();
@@ -210,12 +213,13 @@ public class WpsMainPanel extends JPanel {
                 String s = app.get_ActiveDocument().get_Paragraphs().get_Alignment().name();
 
 
-                Section item = app.get_ActiveDocument().get_Sections().Item(1);int se = app.get_ActiveDocument().get_Sections().get_Count();
-                // 判断页眉是否存在
+                Section item = app.get_ActiveDocument().get_Sections().Item(1);
+                int se = app.get_ActiveDocument().get_Sections().get_Count();
+                //判断页眉是否存在
                 boolean exists = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Exists();
 
                 System.out.println(exists);
-                // 获取页眉内容
+               // 获取页眉内容
                 String text1 = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
 
                 System.out.println(text1);
@@ -229,25 +233,44 @@ public class WpsMainPanel extends JPanel {
                 }else{
                     name = "no";
                 }
-                System.out.println(name);
-
-                // 注意判断字符是否为汉字
-               /* char[] ch = text.toCharArray();
-                for (int i = 0; i < ch.length; i++) {
-                    char c = ch[i];
-                    if(charUitl.isChinese(c)){
-                        // 是汉字
-                        System.out.println(c + "--是汉字");
-                    }else {
-                        // 不是汉字
-                        System.out.println(c + "--不是汉字");
-                    }
-                }*/
 
 
 
-               String rt = "你的文本:\n" + text +"\n"+"你的字号："+"\n"+ fontSize + "\n"+ "你的文本颜色：" + color;
-                menuPanel.updteText("xxx",rt);
+                // 文档中有多少段落（获取值比实际段落值多一）
+                int outLineCount = app.get_ActiveDocument().get_Content().get_Paragraphs().get_Count();
+                String paragraphsCount = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(2).toString();
+                System.out.println(paragraphsCount);
+                System.out.println(outLineCount);
+                String textContent = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(2).get_Range().get_Text();
+                System.out.println(textContent);
+
+
+                // 指定段落字体大小
+                float titleStyle =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(1).get_Range().get_Font().get_Size();
+
+                // 获取标题等级
+                String titleName =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(41).get_OutlineLevel().name();
+                String titleText =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(43).get_Range().get_Text();
+                //System.out.println(outLineLevel);
+                System.out.println(titleText);
+                String text1 = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
+
+                // 返回文档中总共有几页
+                Object s = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdNumberOfPagesInDocument);
+
+
+                String text1 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
+                Object s = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndPageNumber);
+                Object s1 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndAdjustedPageNumber);
+                Object s3 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndAdjustedPageNumber);
+                WdPageNumberStyle s2 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_NumberStyle();
+                System.out.println(s.toString()+":"+s1.toString() +":"+ text1 +":"+s2 );*/
+                double headerFoot = wpsUtil.headerFootStyle(app);
+               double titleCount = wpsUtil.titleContentTextStyle(app);
+
+
+
+                menuPanel.updteText("xxx","分数为："+(headerFoot+titleCount));
             }
         });
 
