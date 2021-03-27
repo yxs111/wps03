@@ -40,6 +40,7 @@ import java.lang.System;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static com.wps.api.tree.wps.WdCharacterCase.wdTitleSentence;
@@ -48,6 +49,7 @@ import static com.wps.api.tree.wps.WdGranularity.wdGranularityWordLevel;
 import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterFirstPage;
 import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterPrimary;
 import static com.wps.api.tree.wps.WdInformation.*;
+import static com.wps.api.tree.wps.WdPageNumberStyle.wdPageNumberStyleNumberInCircle;
 
 
 /**
@@ -105,6 +107,7 @@ public class WpsMainPanel extends JPanel {
 
         WpsUtil wpsUtil = new WpsUtil();
 
+        BigDecimalUtil count = new BigDecimalUtil();
 
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
@@ -115,6 +118,8 @@ public class WpsMainPanel extends JPanel {
                         // app.get_ActiveDocument().Close(false, Variant.getMissing(), Variant.getMissing());
                         // JOptionPane.showMessageDialog(client,"已经初始化过，不需要重新初始化！");
                         app.get_ActiveDocument().get_Content().put_Text(wpsUtil.wpsContentText);
+                        // 插入页码之后编号设置为从0开始
+                        app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().put_NumberStyle(wdPageNumberStyleNumberInCircle);
                         return;
                     }
                 }
@@ -168,28 +173,12 @@ public class WpsMainPanel extends JPanel {
 
                 app.get_ActiveDocument().get_Content().put_Text(wpsUtil.wpsContentText);
 
-            }
-        });
-
-
-        /*menuPanel.addButton("常用", "创建新文档", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                app.get_Documents().Add(Variant.getMissing(), Variant.getMissing(), Variant.getMissing(), Variant.getMissing());
-            }
-        });*/
-
-
-
-        /*
-        menuPanel.addButton("常用", "关闭", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                app.get_ActiveDocument().Close(false, Variant.getMissing(), Variant.getMissing());
+                // 插入页码之后页码样式设置为①
+                app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().put_NumberStyle(wdPageNumberStyleNumberInCircle);
 
             }
         });
-        */
+
 
         menuPanel.addArea("常用","123",wpsUtil.wpsRequirement);
 
@@ -197,173 +186,18 @@ public class WpsMainPanel extends JPanel {
         menuPanel.addButton("常用","提交" , new ActionListener(){
 
             public void actionPerformed(ActionEvent e){
-                /*// 获取全部文本内容
-                String text = app.get_ActiveDocument().get_Content().get_Text();
-
-                // 获取全部文本颜色
-                //String color = app.get_ActiveDocument().get_Content().get_Font().get_Color().name();
-
-                // 获取全部文本字体大小
-                Float fontSize = app.get_ActiveDocument().get_Content().get_Font().get_Size();
-
-                // 获取文本字符串间距
-                Float spacing = app.get_ActiveDocument().get_Content().get_Font().get_Spacing();
-
-                // 待定：段落文本对齐方式(error：始终类型不匹配)
-                String s = app.get_ActiveDocument().get_Paragraphs().get_Alignment().name();
 
 
-                Section item = app.get_ActiveDocument().get_Sections().Item(1);
-                int se = app.get_ActiveDocument().get_Sections().get_Count();
-                //判断页眉是否存在
-                boolean exists = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Exists();
+                BigDecimal headerFoot = wpsUtil.headerFootStyle(app);
+                BigDecimal titleCount = wpsUtil.titleContentTextStyle(app);
+                BigDecimal firstPage = wpsUtil.firstPage(app);
+                BigDecimal max =  count.addThree(headerFoot,titleCount,firstPage);
 
-                System.out.println(exists);
-               // 获取页眉内容
-                String text1 = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
-
-                System.out.println(text1);
-
-                String nameFarEast2 =item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_NameFarEast();
-                Float size = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();
-                System.out.println(size);
-                String name = item.get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_ParagraphFormat().get_Alignment().name();
-                if(name.equals("wdAlignParagraphCenter")){
-                    name = "居中";
-                }else{
-                    name = "no";
-                }
-
-
-
-                // 文档中有多少段落（获取值比实际段落值多一）
-                int outLineCount = app.get_ActiveDocument().get_Content().get_Paragraphs().get_Count();
-                String paragraphsCount = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(2).toString();
-                System.out.println(paragraphsCount);
-                System.out.println(outLineCount);
-                String textContent = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(2).get_Range().get_Text();
-                System.out.println(textContent);
-
-
-                // 指定段落字体大小
-                float titleStyle =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(1).get_Range().get_Font().get_Size();
-
-                // 获取标题等级
-                String titleName =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(41).get_OutlineLevel().name();
-                String titleText =  app.get_ActiveDocument().get_Content().get_Paragraphs().Item(43).get_Range().get_Text();
-                //System.out.println(outLineLevel);
-                System.out.println(titleText);
-                String text1 = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
-
-                // 返回文档中总共有几页
-                Object s = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdNumberOfPagesInDocument);
-
-
-                String text1 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
-                Object s = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndPageNumber);
-                Object s1 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndAdjustedPageNumber);
-                Object s3 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdActiveEndAdjustedPageNumber);
-                WdPageNumberStyle s2 = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_NumberStyle();
-                System.out.println(s.toString()+":"+s1.toString() +":"+ text1 +":"+s2 );*/
-                double headerFoot = wpsUtil.headerFootStyle(app);
-               double titleCount = wpsUtil.titleContentTextStyle(app);
-
-
-
-                menuPanel.updteText("xxx","分数为："+(headerFoot+titleCount));
+                menuPanel.updteText("xxx","分数为："+ max);
             }
         });
 
         menuPanel.addArea("常用","234","结果");
-
-        /*menuPanel.addButton("理论", "理论试题", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                examPanel.openForm("http://1xexam.jiuhuax.com/login/index2","hello swing");
-            }
-        });*/
-
-//        menuPanel.addButton("常用", "提交", new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String text = app.get_ActiveDocument().get_Content().get_Text();
-//                menuPanel.addFileArea(text);
-//                menuPanel.addArea("123","123",text);
-//            }
-//
-//        });
-
-
-
-//        menuPanel.addButton("常用", "获取文本内容", new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//                String text = app.get_ActiveDocument().get_Content().get_Text();
-//
-//                text.replace("/[\r]/g","\r\n");
-//                JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>"+text+"</p></body></html>");//文本内容折行显示
-//            }
-//        });
-
-//        menuPanel.addButton("常用", "判断", new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//                String text = app.get_ActiveDocument().get_Content().get_Text();
-//                Float text2 = app.get_ActiveDocument().get_Content().get_Font().get_Size();
-//                text.replace("/[\r]/g","\r\n");
-//                //String a = "111";
-//                if (text != null && text.equals("111")){
-//
-//
-//                    JOptionPane.showMessageDialog(null,"<html><body><p style='width: 200px;'>"+true+"</p></body></html>");
-//
-//                }else {
-//                    JOptionPane.showMessageDialog(null,"<html><body><p style='width: 200px;'>"+false+"</p></body></html>");
-//                }
-//
-//            }
-//        });
-
-//        menuPanel.addButton("常用", "获取所输入的文字是否正确", new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-////                String version = app.get_Build();
-////                JOptionPane.showMessageDialog(null, version);
-////                //返回字符串的副本，忽略前导空白和尾部空白。
-//                String text = app.get_ActiveDocument().get_Content().get_Text().trim();
-//                if (text.equals("123456")){
-//                    JOptionPane.showMessageDialog(null,true);
-//                    return;
-//                }
-//                JOptionPane.showMessageDialog(null,false);
-//            }
-//        });
-
-
-
-
-//        menuPanel.addButton("常用", "获取文本内容字体大小", new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                Float text = app.get_ActiveDocument().get_Content().get_Font().get_Size();
-//                JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>"+text+"</p></body></html>");//文本内容折行显示
-//            }
-//        });
-
-
-  /*      menuPanel.addButton("常用", "获取文本内容字体颜色", new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-             WdColor  text = app.get_ActiveDocument().get_Content().get_Font().get_Color();
-                JOptionPane.showMessageDialog(null, "<html><body><p style='width: 200px;'>"+text+"</p></body></html>");//文本内容折行显示
-            }
-        });*/
-       // menuPanel.addArea("常用", "设置正文字体为宋体","wpscaozuodldlldl");
-     //   jTextArea = new JTextArea(10, 10);
-
-     //   menuPanel.add(jTextArea);
 
 
     }

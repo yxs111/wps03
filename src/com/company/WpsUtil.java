@@ -4,15 +4,193 @@ import com.wps.api.tree.wps.Application;
 import com.wps.api.tree.wps.WdHeaderFooterIndex;
 import com.wps.api.tree.wps.WdPageNumberStyle;
 
+import java.math.BigDecimal;
+
 import static com.wps.api.tree.wps.WdHeaderFooterIndex.wdHeaderFooterPrimary;
+import static com.wps.api.tree.wps.WdInformation.wdNumberOfPagesInDocument;
 
 
 public class WpsUtil {
 
+
+    // 页眉和页脚相关判断
+    public BigDecimal headerFootStyle(Application app){
+        BigDecimal headerFoot = new BigDecimal("0.0000");
+        BigDecimal countNum = new BigDecimal("25.0000");
+        BigDecimal subjectError = new BigDecimal("0.00000");
+        // 获取页眉内容
+        String headerText = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
+
+        // 获取页脚的页码样式
+        // boolean footNumberExists = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_RestartNumberingAtSection();
+        WdPageNumberStyle footNumberStyle = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_NumberStyle();
+
+        // 页眉
+        if (headerText.equals("WPS办公应用职业技能等级标准")){
+            // 页眉内容 字体大小 字体样式 对齐方式为居中
+            String headerTextFontStyleName = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Name();
+            float headerTextFontSize = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();
+            String headerAlignmentName =  app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_ParagraphFormat().get_Alignment().name();
+            if(headerTextFontStyleName.equals("宋体") && headerTextFontSize == 12.0 && headerAlignmentName.equals("wdAlignParagraphCenter")){
+                headerFoot = headerFoot.add(countNum);
+            }else {
+                headerFoot = headerFoot.add(subjectError);
+            }
+        }
+        if(headerText != "WPS办公应用职业技能等级标准"){
+            headerFoot = headerFoot.add(subjectError);
+        }
+
+        // 页脚
+        if(footNumberStyle.toString().equals("wdPageNumberStyleArabic")){
+            headerFoot = headerFoot.add(countNum);
+        }
+
+        return headerFoot.setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+    // 标题1字体大小为 22.0 黑体
+    // 标题2字体大小为 16.0 黑体
+    // 标题3字体大小为 16.0 宋体
+    // 正文使用12号宋体，西文及数字使用12号Times New Roman字体 1.5倍行距
+    // 标题和正文相关判断
+    public BigDecimal titleContentTextStyle(Application app){
+        BigDecimal titleContent = new BigDecimal("0.00000");
+        BigDecimal countNum = new BigDecimal("0.5814");
+        BigDecimal subjectError = new BigDecimal("0.00000");
+
+        // 文档中是否存在目录
+        try {
+            int  heading = app.get_ActiveDocument().get_TablesOfContents().Item(1).get_UpperHeadingLevel();
+            if(heading == 1){
+                // 存在目录
+                titleContent = titleContent.add(countNum);
+            }
+            if (heading != 1){
+                // 不存在目录
+                titleContent = titleContent.add(subjectError);
+            }
+        }catch (Exception e){
+            titleContent = titleContent.add(subjectError);
+        }
+
+        // 文档中有多少段落（获取值比实际段落值多一）
+        int outLineCount = app.get_ActiveDocument().get_Content().get_Paragraphs().get_Count();
+        for (int i = 0 ; i < outLineCount ;i++){
+            // 判断当前段落是否需要设置为标题
+            if (i == 1 || i == 4 || i == 6 ||
+                    i == 8 || i == 10 || i == 12 ||
+                    i == 14 || i == 16 || i == 18 ||
+                    i == 20 || i == 22 || i == 24 ||
+                    i == 25 || i == 27 || i == 29 ||
+                    i == 32 || i == 34 || i == 35 ||
+                    i == 37 || i == 39 || i == 41){
+                // 文本规定为标题
+                String titleStyleName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_OutlineLevel().name();
+                if (titleStyleName.equals("wdOutlineLevel1")){
+                    // 文本为标题1 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+
+                    if(fontSize == 22.0 && fontName.equals("黑体")){
+                        titleContent = titleContent.add(countNum);
+                    }else{
+
+                        titleContent = titleContent.add(subjectError);
+                    }
+                }else if (titleStyleName.equals("wdOutlineLevel2")){
+                    // 文本为标题2 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                    if(fontSize == 16.0 && fontName.equals("黑体")){
+                        titleContent = titleContent.add(countNum);
+                    }else{
+
+                        titleContent = titleContent.add(subjectError);
+                    }
+                }else if (titleStyleName.equals("wdOutlineLevel3")){
+                    // 文本为标题3 并获取字体样式和大小
+                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                    if(fontSize == 16.0 && fontName.equals("宋体")){
+                        titleContent = titleContent.add(countNum);
+                    }else{
+
+                        titleContent = titleContent.add(subjectError);
+                    }
+                }else{
+
+                    titleContent = titleContent.add(subjectError);
+                }
+            }
+            if(i == 2 || i == 3 || i == 5 ||
+                    i == 7 || i == 9 || i == 11 ||
+                    i == 13 || i == 15 || i == 17 ||
+                    i == 19 || i == 21 || i == 23 ||
+                    i == 26 || i == 28 || i == 30 ||
+                    i == 31 || i == 33 || i == 36 ||
+                    i == 38 || i == 40 || i == 42){
+                // 文本不为标题
+                String countText = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Text();
+                Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                if (fontSize == 12.0 && fontName.equals("宋体")){
+                    titleContent = titleContent.add(countNum);
+                }else{
+
+                    titleContent = titleContent.add(subjectError);
+                }
+               /* char[] ch = textContent.toCharArray();
+                for (int ci = 0; ci < ch.length; ci++) {
+                    char c = ch[ci];
+                    if(new CharUitl().isChinese(c) ? true : false){
+                        // 如果为汉字
+                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                        if (fontSize == 12.0 && fontName.equals("宋体")){
+                            max += 0 ;
+                        }else{
+                            max -= (ch.length/0.4);
+                        }
+                    }else{
+                        // 如果不为汉字
+                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
+                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                        if (fontSize == 12.0 && fontName.equals("Times New Roman")){
+                            max += 0 ;
+                        }else{
+                            max -= (ch.length/0.4);
+                        }
+                    }
+                }*/
+            }
+        }
+        return titleContent.setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    // 判断封面
+    public BigDecimal firstPage(Application app){
+
+        BigDecimal firstPage = new BigDecimal("0.00000");
+        BigDecimal countNum = new BigDecimal("25.0000");
+        BigDecimal subjectError = new BigDecimal("0.00000");
+
+        Object o = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Information(wdNumberOfPagesInDocument);
+        String s = o.toString();
+        if (s.equals("3")) {
+            firstPage = firstPage.add(countNum);
+        }
+        if (s != "3"){
+            firstPage = firstPage.add(subjectError);
+        }
+        return firstPage.setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+
+
     //文档题目要求
     public String wpsRequirement = "对以下素材按要求进行排版：\n" +
             "(1)为素材加上页眉“WPS办公应用职业技能等级标准”，居中显示，字体大小为宋体小四。\n" +
-            "(2)为素材加上页码，从正文开始，格式为“1”，在页脚居中显示。\n" +
+            "(2)为素材加上页码，从正文开始，样式为“1”，在页脚居中显示。\n" +
             "(3)对素材进行排版，确定标题级别，并自动生成目录。其中标题1为黑体、二号；标题2为黑体三号；标题为3宋体，三号，加粗；正文使用小四号宋体，西文及数字使用小四号Times New Roman字体，1.5倍行距；目录为宋体、小四号字体。\n" +
             "(4)为文档加上封面，内容为“WPS办公应用职业技能等级标准”，效果可自己设计。\n" +
             "每个要求25分，总分100分";
@@ -61,133 +239,6 @@ public class WpsUtil {
             "（3）WPS办公应用高级\n" +
             "主要面向企事业单位专职文员或技术岗位团队协作的需要，能够实现在线团队协作办公，创意型演示文稿的创作与演讲，应用数据表格对数据的进行数据的可视化处理并打印。\n";
 
-    // 页眉和页脚相关判断
-    public double headerFootStyle(Application app){
-        double headerFoot = 0.00;
-        // 获取页眉内容
-        String headerText = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Text().trim();
-
-        // 获取页脚样式
-        WdPageNumberStyle footNumberStyle = app.get_ActiveDocument().get_Sections().Item(1).get_Footers().Item(wdHeaderFooterPrimary).get_PageNumbers().get_NumberStyle();
-
-        // 页眉
-        if (headerText.equals("WPS办公应用职业技能等级标准")){
-            // 页眉内容 字体大小 字体样式 对齐方式为居中
-            String headerTextFontStyleName = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Name();
-            float headerTextFontSize = app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_Font().get_Size();
-            String headerAlignmentName =  app.get_ActiveDocument().get_Sections().Item(1).get_Headers().Item(WdHeaderFooterIndex.wdHeaderFooterPrimary).get_Range().get_ParagraphFormat().get_Alignment().name();
-           if(headerTextFontStyleName.equals("宋体") && headerTextFontSize == 12.0 && headerAlignmentName.equals("wdAlignParagraphCenter")){
-               headerFoot += 25;
-           }else {
-               headerFoot += 0;
-           }
-        }
-        if(headerText != "WPS办公应用职业技能等级标准"){
-            headerFoot += 0;
-        }
-
-        // 页脚
-        if(footNumberStyle.toString().equals("wdPageNumberStyleArabic")){
-            headerFoot += 25;
-        }
-        return headerFoot;
-    }
-    // 标题1字体大小为 22.0 黑体
-    // 标题2字体大小为 16.0 黑体
-    // 标题3字体大小为 16.0 宋体
-    // 正文使用12号宋体，西文及数字使用12号Times New Roman字体 1.5倍行距
-    // 标题和正文相关判断
-    public double titleContentTextStyle(Application app){
-        double titleContent = 0.00;
-
-        // 文档中有多少段落（获取值比实际段落值多一）
-        int outLineCount = app.get_ActiveDocument().get_Content().get_Paragraphs().get_Count();
-        for (int i = 0 ; i < outLineCount ;i++){
-            // 判断当前段落是否需要设置为标题
-            if (i == 1 || i == 4 || i == 6 ||
-                i == 8 || i == 10 || i == 12 ||
-                i == 14 || i == 16 || i == 18 ||
-                i == 20 || i == 22 || i == 24 ||
-                i == 25 || i == 27 || i == 29 ||
-                i == 32 || i == 34 || i == 35 ||
-                i == 37 || i == 39 || i == 41){
-                // 文本规定为标题
-                String titleStyleName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_OutlineLevel().name();
-                if (titleStyleName.equals("wdOutlineLevel1")){
-                    // 文本为标题1 并获取字体样式和大小
-                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-
-                    if(fontSize == 22.0 && fontName.equals("黑体")){
-                        titleContent += 1.68;
-                    }else{
-                        titleContent += 0;
-                    }
-                }else if (titleStyleName.equals("wdOutlineLevel2")){
-                    // 文本为标题2 并获取字体样式和大小
-                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                    if(fontSize == 16.0 && fontName.equals("黑体")){
-                        titleContent += 1.68;
-                    }else{
-                        titleContent += 0;
-                    }
-                }else if (titleStyleName.equals("wdOutlineLevel3")){
-                    // 文本为标题3 并获取字体样式和大小
-                    Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                    String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                    if(fontSize == 16.0 && fontName.equals("宋体")){
-                        titleContent += 1.68;
-                    }else{
-                        titleContent += 0;
-                    }
-                }else{
-                    titleContent += 0;
-                }
-            }
-            if(i == 2 || i == 3 || i == 5 ||
-                i == 7 || i == 9 || i == 11 ||
-                i == 13 || i == 15 || i == 17 ||
-                i == 19 || i == 21 || i == 23 ||
-                i == 26 || i == 28 || i == 30 ||
-                i == 31 || i == 33 || i == 36 ||
-                i == 38 || i == 40 || i == 42){
-                // 文本不为标题
-                String countText = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Text();
-                Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                if (fontSize == 12.0 && fontName.equals("宋体")){
-                    titleContent += 1.68 ;
-                }else{
-                    titleContent += 0;
-                }
-               /* char[] ch = textContent.toCharArray();
-                for (int ci = 0; ci < ch.length; ci++) {
-                    char c = ch[ci];
-                    if(new CharUitl().isChinese(c) ? true : false){
-                        // 如果为汉字
-                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                        if (fontSize == 12.0 && fontName.equals("宋体")){
-                            max += 0 ;
-                        }else{
-                            max -= (ch.length/0.4);
-                        }
-                    }else{
-                        // 如果不为汉字
-                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                        if (fontSize == 12.0 && fontName.equals("Times New Roman")){
-                            max += 0 ;
-                        }else{
-                            max -= (ch.length/0.4);
-                        }
-                    }
-                }*/
-            }
-        }
-        return titleContent ;
-    }
 
 
 
