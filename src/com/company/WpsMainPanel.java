@@ -162,6 +162,7 @@ public class WpsMainPanel extends JPanel {
                 //args.setPath("/home/wps/workspace/wps_2016/build_debug/WPSOffice/office6/wps"); //手动指定的wps程序路径（默认调用/usr/bin/wps）
                 //args.setPath("D:\\桌面软件安装\\爱奇艺\\Kingsoft\\WPS Office\\ksolaunch.exe"); //手动指定的wps程序路径（默认调用/usr/bin/wps）
                 //args.setPath("C:\\Users\\001\\Desktop\\年会.docx"); //手动指定的wps程序路径（默认调用/usr/bin/wps）
+                //args.setPath("C:/Program Files (x86)/Microsoft Office");
                 args.setWinid(nativeWinId);
                 args.setHeight(client.getHeight());
                 args.setWidth(client.getWidth());
@@ -193,7 +194,7 @@ public class WpsMainPanel extends JPanel {
                 BigDecimal firstPage = wpsUtil.firstPage(app);
                 BigDecimal max =  count.addThree(headerFoot,titleCount,firstPage);
 
-                menuPanel.updteText("xxx","分数为："+ max);
+                menuPanel.updteText("xxx","分数为："+max);
             }
         });
 

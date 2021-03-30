@@ -32,7 +32,7 @@ public class Main {
 
 
                 mainFrame.setTitle("WPS JAVA接口调用演示");                       //设置显示窗口标题
-               mainFrame.setSize(1980, 768);                           //设置窗口显示尺寸
+               mainFrame.setSize(1980, 1000);                           //设置窗口显示尺寸
 
 
                 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       //置窗口是否可以关闭

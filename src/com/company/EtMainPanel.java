@@ -46,6 +46,7 @@ public class EtMainPanel extends JPanel {
     private void initMenu(){
 
         ETUtil etUtil = new ETUtil();
+        BigDecimalUtil bigDecimalUtil = new BigDecimalUtil();
         menuPanel.addButton("常用", "打开试题", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -112,10 +113,8 @@ public class EtMainPanel extends JPanel {
                 BigDecimal subjectTwo = etUtil.subjectTow(app);
                 BigDecimal subjectThree = etUtil.subjectThree(app);
 
-                menuPanel.updteText("test","第一题分数：" + subjectOne + "\n"+
-                                                        "第二题分数：" + subjectTwo +"\n"+
-                                                        "第三题分数：" + subjectThree +"\n"+
-                                                        "第四题分数：" +"");
+                BigDecimal max = bigDecimalUtil.addThree(subjectOne,subjectTwo,subjectThree);
+                menuPanel.updteText("test","分数："+max );
             }
         });
 
