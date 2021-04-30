@@ -115,11 +115,16 @@ public class WppMainPanel extends JPanel {
                 BigDecimal subjectTen = wppUtil.subjectTen(app);
                 BigDecimal max = bigDecimalUtil.addTen(subjectOne,subjectTwo,subjectThree,subjectFour,subjectFive,subjectSix,subjectSeven,subjectEight,subjectNine,subjectTen);
 
-                //String music = app.get_ActivePresentation().get_Slides().Item(1).get_SlideShowTransition().get_SoundEffect().get_Name();
-
                 menuPanel.updteText("test","分数："+max);
+                app.get_ActivePresentation().SaveAs("C:/Users/001/Desktop/ppt", PpSaveAsFileType.ppSaveAsPresentation, MsoTriState.msoTrue);
+                String path = app.get_ActivePresentation().get_FullName();
+                System.out.println(path.replaceAll("\\\\","/"));
+                 //System.out.println(path);
+
+
             }
         });
+
 
 
         menuPanel.addArea("常用","text","提交后输出区域");

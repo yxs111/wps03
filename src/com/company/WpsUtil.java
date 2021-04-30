@@ -63,7 +63,11 @@ public class WpsUtil {
             int  heading = app.get_ActiveDocument().get_TablesOfContents().Item(1).get_UpperHeadingLevel();
             if(heading == 1){
                 // 存在目录
-                titleContent = titleContent.add(countNum);
+                String  headingFontName = app.get_ActiveDocument().get_TablesOfContents().Item(1).get_Range().get_Font().get_Name();
+                float headingFontSize = app.get_ActiveDocument().get_TablesOfContents().Item(1).get_Range().get_Font().get_Size();
+                if(headingFontName.equals("宋体") && headingFontSize == 12.0){
+                    titleContent = titleContent.add(countNum);
+                }
             }
             if (heading != 1){
                 // 不存在目录
@@ -111,6 +115,8 @@ public class WpsUtil {
                     // 文本为标题3 并获取字体样式和大小
                     Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
                     String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
+                    int bold = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Bold();
+                    System.out.println(bold);
                     if(fontSize == 16.0 && fontName.equals("宋体")){
                         titleContent = titleContent.add(countNum);
                     }else{
@@ -139,29 +145,7 @@ public class WpsUtil {
 
                     titleContent = titleContent.add(subjectError);
                 }
-               /* char[] ch = textContent.toCharArray();
-                for (int ci = 0; ci < ch.length; ci++) {
-                    char c = ch[ci];
-                    if(new CharUitl().isChinese(c) ? true : false){
-                        // 如果为汉字
-                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                        if (fontSize == 12.0 && fontName.equals("宋体")){
-                            max += 0 ;
-                        }else{
-                            max -= (ch.length/0.4);
-                        }
-                    }else{
-                        // 如果不为汉字
-                        Float fontSize = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Size();
-                        String fontName = app.get_ActiveDocument().get_Content().get_Paragraphs().Item(i).get_Range().get_Font().get_Name();
-                        if (fontSize == 12.0 && fontName.equals("Times New Roman")){
-                            max += 0 ;
-                        }else{
-                            max -= (ch.length/0.4);
-                        }
-                    }
-                }*/
+
             }
         }
         return titleContent.setScale(2, BigDecimal.ROUND_HALF_UP);
